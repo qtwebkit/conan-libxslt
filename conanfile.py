@@ -8,7 +8,7 @@ from conans import ConanFile, tools, AutoToolsBuildEnvironment, VisualStudioBuil
 class LibxsltConan(ConanFile):
     name = "libxslt"
     version = "1.1.33"
-    url = "https://github.com/qtwebkit/conan-libxslt"
+    url = "https://github.com/bincrafters/conan-libxslt"
     description = "libxslt is a software library implementing XSLT processor, based on libxml2"
     author = "Bincrafters <bincrafters@gmail.com>"
     topics = "XSLT", "processor"
@@ -24,7 +24,7 @@ class LibxsltConan(ConanFile):
     _source_subfolder = "source_subfolder"
 
     def requirements(self):
-        self.requires("libxml2/2.9.9@qtproject/stable")
+        self.requires("libxml2/2.9.9@bincrafters/stable")
 
     @property
     def _is_msvc(self):
@@ -76,19 +76,26 @@ class LibxsltConan(ConanFile):
                 self.run(configure_command)
 
                 # Fix library names because they can be not just zlib.lib
+                def format_libs(package):
+                    libs = []
+                    for lib in self.deps_cpp_info[package].libs:
+                        libname = lib
+                        if not libname.endswith('.lib'):
+                            libname += '.lib'
+                        libs.append(libname)
+                    return ' '.join(libs)
+
                 def fix_library(option, package, old_libname):
                     if option:
-                        libs = []
-                        for lib in self.deps_cpp_info[package].libs:
-                            libname = lib
-                            if not libname.endswith('.lib'):
-                                libname += '.lib'
-                            libs.append(libname)
                         tools.replace_in_file("Makefile.msvc",
                                               "LIBS = %s" % old_libname,
-                                              "LIBS = %s" % ' '.join(libs))
+                                              "LIBS = %s" % format_libs(package))
 
-                fix_library(True, 'icu', 'wsock32.lib')
+                if "icu" in self.deps_cpp_info.deps:
+                    fix_library(True, 'icu', 'wsock32.lib')
+
+                tools.replace_in_file("Makefile.msvc", "libxml2.lib", format_libs("libxml2"))
+                tools.replace_in_file("Makefile.msvc", "libxml2_a.lib", format_libs("libxml2"))
 
                 with tools.environment_append(VisualStudioBuildEnvironment(self).vars):
                     self.run("nmake /f Makefile.msvc install")
@@ -136,13 +143,26 @@ class LibxsltConan(ConanFile):
             for prefix in ["run", "test"]:
                 for test in glob.glob("%s/bin/%s*" % (self.package_folder, prefix)):
                     os.remove(test)
+        if self.settings.compiler == "Visual Studio":
+            if self.settings.build_type == "Debug":
+                os.unlink(os.path.join(self.package_folder, "bin", "libexslt.pdb"))
+                os.unlink(os.path.join(self.package_folder, "bin", "libxslt.pdb"))
+                os.unlink(os.path.join(self.package_folder, "bin", "xsltproc.pdb"))
+            if self.options.shared:
+                os.unlink(os.path.join(self.package_folder, "lib", "libxslt_a.lib"))
+                os.unlink(os.path.join(self.package_folder, "lib", "libexslt_a.lib"))
+            else:
+                os.unlink(os.path.join(self.package_folder, "lib", "libxslt.lib"))
+                os.unlink(os.path.join(self.package_folder, "lib", "libexslt.lib"))
+                os.unlink(os.path.join(self.package_folder, "bin", "libxslt.dll"))
+                os.unlink(os.path.join(self.package_folder, "bin", "libexslt.dll"))
         la = os.path.join(self.package_folder, 'lib', 'libxslt.la')
         if os.path.isfile(la):
             os.unlink(la)
 
     def package_info(self):
         if self._is_msvc:
-            self.cpp_info.libs = ['libxslt']
+            self.cpp_info.libs = ['libxslt' if self.options.shared else 'libxslt_a']
         else:
             self.cpp_info.libs = ['xslt']
         self.cpp_info.includedirs.append(os.path.join("include", "libxslt"))
