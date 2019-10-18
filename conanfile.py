@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import glob
 import os
 from conans import ConanFile, tools, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment
@@ -11,7 +9,7 @@ class LibxsltConan(ConanFile):
     url = "https://github.com/bincrafters/conan-libxslt"
     description = "libxslt is a software library implementing XSLT processor, based on libxml2"
     author = "Bincrafters <bincrafters@gmail.com>"
-    topics = "XSLT", "processor"
+    topics = ("XSLT", "processor")
     homepage = "https://xmlsoft.org"
     license = "MIT"
     settings = "os", "arch", "compiler", "build_type"
@@ -45,6 +43,7 @@ class LibxsltConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
 
     def build(self):
         if self._is_msvc:
