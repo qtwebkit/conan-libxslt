@@ -17,7 +17,6 @@ class LibxsltConan(ConanFile):
     default_options = {'shared': False,
                        'fPIC': True}
     exports = ["LICENSE.md"]
-    exports_sources = ["FindLibXml2.cmake"]
     _source_subfolder = "source_subfolder"
 
     def requirements(self):
