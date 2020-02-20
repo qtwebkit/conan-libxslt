@@ -5,7 +5,7 @@ from conans import ConanFile, tools, AutoToolsBuildEnvironment, VisualStudioBuil
 
 class LibxsltConan(ConanFile):
     name = "libxslt"
-    version = "1.1.33"
+    version = "1.1.34"
     url = "https://github.com/bincrafters/conan-libxslt"
     description = "libxslt is a software library implementing XSLT processor, based on libxml2"
     topics = ("XSLT", "processor")
@@ -32,7 +32,7 @@ class LibxsltConan(ConanFile):
 
     def source(self):
         tools.get("http://xmlsoft.org/sources/libxslt-{0}.tar.gz".format(self.version),
-                  sha256="8e36605144409df979cab43d835002f63988f3dc94d5d3537c12796db90e38c8")
+                  sha256="98b1bd46d6792925ad2dfe9a87452ea2adebf69dcb9919ffd55bf926a7f93f7f")
         os.rename("libxslt-{0}".format(self.version), self._source_subfolder)
 
     def config_options(self):
@@ -82,14 +82,14 @@ class LibxsltConan(ConanFile):
                         libs.append(libname)
                     return ' '.join(libs)
 
-                def fix_library(option, package, old_libname):
+                def fix_library(option, package):
                     if option:
                         tools.replace_in_file("Makefile.msvc",
-                                              "LIBS = %s" % old_libname,
+                                              "LIBS =",
                                               "LIBS = %s" % format_libs(package))
 
                 if "icu" in self.deps_cpp_info.deps:
-                    fix_library(True, 'icu', 'wsock32.lib')
+                    fix_library(True, 'icu')
 
                 tools.replace_in_file("Makefile.msvc", "libxml2.lib", format_libs("libxml2"))
                 tools.replace_in_file("Makefile.msvc", "libxml2_a.lib", format_libs("libxml2"))
