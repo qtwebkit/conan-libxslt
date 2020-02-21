@@ -20,7 +20,7 @@ class LibxsltConan(ConanFile):
     _source_subfolder = "source_subfolder"
 
     def requirements(self):
-        self.requires("libxml2/2.9.9")
+        self.requires("libxml2/2.9.10")
 
     @property
     def _is_msvc(self):
