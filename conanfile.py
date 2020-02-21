@@ -18,6 +18,7 @@ class LibxsltConan(ConanFile):
                        'fPIC': True}
     exports = ["LICENSE.md"]
     _source_subfolder = "source_subfolder"
+    exports_sources = "patches/**"
 
     def requirements(self):
         self.requires("libxml2/2.9.10")
@@ -39,11 +40,16 @@ class LibxsltConan(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
+    def _patch_sources(self):
+        for patch in os.listdir("patches"):
+            tools.patch(patch_file=os.path.join("patches", patch), base_path=self._source_subfolder)
+
     def configure(self):
         del self.settings.compiler.libcxx
         del self.settings.compiler.cppstd
 
     def build(self):
+        self._patch_sources()
         if self._is_msvc:
             self._build_windows()
         else:
