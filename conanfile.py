@@ -6,7 +6,7 @@ from conans import ConanFile, tools, AutoToolsBuildEnvironment, VisualStudioBuil
 class LibxsltConan(ConanFile):
     name = "libxslt"
     version = "1.1.34"
-    url = "https://github.com/bincrafters/conan-libxslt"
+    url = "https://github.com/qtwebkit/conan-libxslt"
     description = "libxslt is a software library implementing XSLT processor, based on libxml2"
     topics = ("XSLT", "processor")
     homepage = "https://xmlsoft.org"
@@ -21,7 +21,7 @@ class LibxsltConan(ConanFile):
     exports_sources = "patches/**"
 
     def requirements(self):
-        self.requires("libxml2/2.9.10")
+        self.requires("libxml2/2.9.10@qtproject/stable")
 
     @property
     def _is_msvc(self):
