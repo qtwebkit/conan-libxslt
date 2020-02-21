@@ -1,0 +1,22 @@
+--- libxslt/xsltconfig.h.in.old	2020-02-21 08:25:26.188375064 +0300
++++ libxslt/xsltconfig.h.in	2020-02-21 08:25:49.558608006 +0300
+@@ -111,19 +111,6 @@
+ #endif
+ 
+ /**
+- * WITH_PROFILER:
+- *
+- * Activate the compilation of the profiler. Speed penalty
+- * is insignifiant.
+- * On by default unless --without-profiler is passed to configure
+- */
+-#if @WITH_PROFILER@
+-#ifndef WITH_PROFILER
+-#define WITH_PROFILER
+-#endif
+-#endif
+-
+-/**
+  * WITH_MODULES:
+  *
+  * Whether module support is configured into libxslt
