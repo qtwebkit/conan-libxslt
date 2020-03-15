@@ -73,6 +73,7 @@ class LibxsltConan(ConanFile):
                         'iconv=no',
                         'xslt_debug=no',
                         'debugger=no',
+                        'profiler=no',
                         'crypto=no']
                 configure_command = ' '.join(args)
                 self.output.info(configure_command)
@@ -125,6 +126,7 @@ class LibxsltConan(ConanFile):
         configure_args.extend([
             '--without-crypto',
             '--without-debugger',
+            '--without-profiler',
             '--without-plugins',
             'XML_CONFIG=%s' % xml_config
         ])
